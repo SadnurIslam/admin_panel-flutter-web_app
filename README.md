@@ -10,7 +10,7 @@
 </ul>
 
 <h2>FreshMart Mobile App</h2>
-<p>FreshMart is an e-commerce mobile application designed to provide a seamless grocery shopping experience. The Admin Web App complements it by offering:</p>
+<p>FreshMart is an e-commerce mobile application designed to provide a seamless grocery shopping experience for users in the local area. The Admin Web App complements it by offering:</p>
 <ul>
   <li>Product management (add, edit, delete)</li>
   <li>Order management</li>
