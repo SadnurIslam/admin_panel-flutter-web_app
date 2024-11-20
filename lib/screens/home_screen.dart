@@ -13,14 +13,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Widget _currentScreen = ChatScreen();
+  Widget _currentScreen = ProductScreen();
 
   // This method will switch the content based on selected sidebar option
   void _updateScreen(String screen) {
     setState(() {
       switch (screen) {
         case 'chat':
-          _currentScreen = ChatScreen();
+          _currentScreen = AdminChatScreen();
           break;
         case 'products':
           _currentScreen = ProductScreen();
