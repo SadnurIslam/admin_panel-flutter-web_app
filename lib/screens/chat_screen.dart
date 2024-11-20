@@ -10,7 +10,6 @@ class _AdminChatScreenState extends State<AdminChatScreen> {
   String? selectedUserId;
   final TextEditingController _messageController = TextEditingController();
 
-  // Fetch the user name based on UID
   Future<String> fetchUserName(String userId) async {
     final userDoc = await FirebaseFirestore.instance
         .collection('users')
@@ -21,7 +20,6 @@ class _AdminChatScreenState extends State<AdminChatScreen> {
     return userDoc.data()?['name'] ?? 'Unknown User';
   }
 
-  // Stream to fetch all chats
   Stream<QuerySnapshot> getUserChats() {
     return FirebaseFirestore.instance
         .collection('chats')
@@ -29,7 +27,6 @@ class _AdminChatScreenState extends State<AdminChatScreen> {
         .snapshots();
   }
 
-  // Stream to fetch messages of the selected user
   Stream<QuerySnapshot> getMessagesStream(String userId) {
     return FirebaseFirestore.instance
         .collection('chats')
@@ -39,7 +36,6 @@ class _AdminChatScreenState extends State<AdminChatScreen> {
         .snapshots();
   }
 
-  // Send a message from the admin
   Future<void> sendMessage(String userId, String message) async {
     if (message.trim().isEmpty) return;
 
@@ -62,7 +58,6 @@ class _AdminChatScreenState extends State<AdminChatScreen> {
     _messageController.clear();
   }
 
-  // Mark all messages as seen by the admin
   Future<void> markMessagesAsSeen(String userId) async {
     final chatDoc = FirebaseFirestore.instance.collection('chats').doc(userId);
     await chatDoc.update({'unseenByAdmin': 0});
@@ -81,106 +76,153 @@ class _AdminChatScreenState extends State<AdminChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Admin Chat')),
+      appBar: AppBar(
+        backgroundColor: Colors.green.shade900,
+        title: Text(
+          'Admin Chat',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: Row(
         children: [
           // User List
           Expanded(
             flex: 2,
-            child: StreamBuilder<QuerySnapshot>(
-              stream: getUserChats(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
-                }
+            child: Container(
+              color: Colors.green.shade100,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: getUserChats(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(child: CircularProgressIndicator());
+                  }
 
-                final users = snapshot.data!.docs;
+                  final users = snapshot.data!.docs;
 
-                return ListView.builder(
-                  itemCount: users.length,
-                  itemBuilder: (context, index) {
-                    final user = users[index];
-                    final userId = user.id;
-                    final unseenCount = user['unseenByAdmin'] ?? 0;
+                  return ListView.builder(
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      final user = users[index];
+                      final userId = user.id;
+                      final unseenCount = user['unseenByAdmin'] ?? 0;
 
-                    return FutureBuilder<String>(
-                      future: fetchUserName(userId),
-                      builder: (context, nameSnapshot) {
-                        final userName = nameSnapshot.data ?? 'Loading...';
+                      return FutureBuilder<String>(
+                        future: fetchUserName(userId),
+                        builder: (context, nameSnapshot) {
+                          final userName = nameSnapshot.data ?? 'Loading...';
 
-                        return ListTile(
-                          title: Text(userName),
-                          subtitle: Text(user['lastMessage'] ?? ''),
-                          trailing: unseenCount > 0
-                              ? CircleAvatar(
-                                  backgroundColor: Colors.red,
-                                  radius: 12,
-                                  child: Text(
-                                    unseenCount.toString(),
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                )
-                              : null,
-                          onTap: () {
-                            setState(() {
-                              selectedUserId = userId;
-                            });
-                            markMessagesAsSeen(userId); // Reset unseen count
-                          },
-                        );
-                      },
-                    );
-                  },
-                );
-              },
+                          return Card(
+                            color: userId == selectedUserId
+                                ? Colors.green.shade300
+                                : Colors.white,
+                            child: ListTile(
+                              title: Text(
+                                userName,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(user['lastMessage'] ?? '',
+                                  maxLines: 1, overflow: TextOverflow.ellipsis),
+                              trailing: unseenCount > 0
+                                  ? CircleAvatar(
+                                      backgroundColor: Colors.red,
+                                      radius: 12,
+                                      child: Text(
+                                        unseenCount.toString(),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    )
+                                  : null,
+                              onTap: () {
+                                setState(() {
+                                  selectedUserId = userId;
+                                });
+                                markMessagesAsSeen(
+                                    userId); // Reset unseen count
+                              },
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
           // Chat Screen
           Expanded(
             flex: 5,
             child: selectedUserId == null
-                ? Center(child: Text('Select a user to chat with.'))
+                ? Center(
+                    child: Text(
+                      'Select a user to chat with.',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                  )
                 : Column(
                     children: [
                       Expanded(
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: getMessagesStream(selectedUserId!),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(child: CircularProgressIndicator());
-                            }
+                        child: Container(
+                          color: Colors.grey.shade200,
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: getMessagesStream(selectedUserId!),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              }
 
-                            final messages = snapshot.data!.docs;
+                              final messages = snapshot.data!.docs;
 
-                            return ListView.builder(
-                              reverse: true,
-                              itemCount: messages.length,
-                              itemBuilder: (context, index) {
-                                final message = messages[index];
-                                final isAdmin = message['isAdmin'] as bool;
+                              return ListView.builder(
+                                reverse: true,
+                                itemCount: messages.length,
+                                itemBuilder: (context, index) {
+                                  final message = messages[index];
+                                  final isAdmin = message['isAdmin'] as bool;
 
-                                return Align(
-                                  alignment: isAdmin
-                                      ? Alignment.centerRight
-                                      : Alignment.centerLeft,
-                                  child: Container(
-                                    margin: EdgeInsets.all(8.0),
-                                    padding: EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: isAdmin
-                                          ? Colors.green[100]
-                                          : Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(12),
+                                  return Align(
+                                    alignment: isAdmin
+                                        ? Alignment.centerRight
+                                        : Alignment.centerLeft,
+                                    child: Container(
+                                      margin: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: isAdmin
+                                            ? Colors.green.shade100
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: isAdmin
+                                              ? Colors.green.shade600
+                                              : Colors.grey.shade400,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        message['message'],
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: isAdmin
+                                              ? Colors.green.shade800
+                                              : Colors.black,
+                                        ),
+                                      ),
                                     ),
-                                    child: Text(
-                                      message['message'],
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ),
                       Padding(
@@ -201,10 +243,14 @@ class _AdminChatScreenState extends State<AdminChatScreen> {
                                 ),
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.send, color: Colors.green),
-                              onPressed: () => sendMessage(
-                                  selectedUserId!, _messageController.text),
+                            SizedBox(width: 8),
+                            CircleAvatar(
+                              backgroundColor: Colors.green.shade900,
+                              child: IconButton(
+                                icon: Icon(Icons.send, color: Colors.white),
+                                onPressed: () => sendMessage(
+                                    selectedUserId!, _messageController.text),
+                              ),
                             ),
                           ],
                         ),
