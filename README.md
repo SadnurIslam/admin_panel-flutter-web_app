@@ -1,16 +1,26 @@
-# adminweb
+<h1>Admin Web App for FreshMart</h1>
 
-A new Flutter project.
+<p>This is an <strong>Admin Web App</strong> developed using <strong>Flutter</strong>, designed specifically to manage and control the functionalities of the <strong>FreshMart</strong> e-commerce mobile app.</p>
 
-## Getting Started
+<h2>About the Project</h2>
+<ul>
+  <li><strong>Purpose:</strong> This web app was created to provide administrative control for the FreshMart e-commerce platform.</li>
+  <li><strong>Platform Focus:</strong> Built with a primary focus on <strong>web applications</strong> using Flutter.</li>
+  <li><strong>Integration:</strong> This admin panel is directly linked to the <strong>FreshMart</strong> mobile app, offering seamless management of products, orders, users, and more.</li>
+</ul>
 
-This project is a starting point for a Flutter application.
+<h2>FreshMart Mobile App</h2>
+<p>FreshMart is an e-commerce mobile application designed to provide a seamless grocery shopping experience for users in the local area. The Admin Web App complements it by offering:</p>
+<ul>
+  <li>Product management (add, edit, delete)</li>
+  <li>Order management</li>
+  <li>Customer support interactions</li>
+  <li>User account management</li>
+</ul>
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<h2>Technologies Used</h2>
+<ul>
+  <li><strong>Frontend:</strong> Flutter (web version)</li>
+  <li><strong>Backend:</strong> Firebase</li>
+  <li><strong>Database:</strong> Firebase firestore</li>
+</ul>
