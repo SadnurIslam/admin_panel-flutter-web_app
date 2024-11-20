@@ -83,6 +83,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     child: DataTable(
                       columns: [
                         DataColumn(label: Text('Name')),
+                        DataColumn(label: Text('Weight')),
                         DataColumn(label: Text('Price')),
                         DataColumn(label: Text('Discount Price')),
                         DataColumn(label: Text('Category')),
@@ -91,6 +92,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       rows: products.map((product) {
                         return DataRow(cells: [
                           DataCell(Text(product['name'])),
+                          DataCell(Text(product['weight'])),
                           DataCell(Text('\$${product['price']}')),
                           DataCell(Text('\$${product['discountPrice']}')),
                           DataCell(FutureBuilder<DocumentSnapshot>(
@@ -148,9 +150,11 @@ class _ProductScreenState extends State<ProductScreen> {
   // Show Add Product Dialog
   void _showAddProductDialog() {
     var _nameController = TextEditingController();
+    var _weightController = TextEditingController();
     var _priceController = TextEditingController();
     var _discountPriceController = TextEditingController();
     var _imageUrlController = TextEditingController();
+
     String? selectedCategoryId;
 
     showDialog(
@@ -163,6 +167,7 @@ class _ProductScreenState extends State<ProductScreen> {
               children: [
                 _buildTextField(_nameController, 'Name'),
                 SizedBox(height: 8),
+                _buildTextField(_weightController, 'Weight'),
                 _buildTextField(_priceController, 'Price', isNumber: true),
                 SizedBox(height: 8),
                 _buildTextField(_discountPriceController, 'Discount Price',
@@ -212,6 +217,7 @@ class _ProductScreenState extends State<ProductScreen> {
               onPressed: () {
                 FirebaseFirestore.instance.collection('products').add({
                   'name': _nameController.text,
+                  'weight': _weightController.text,
                   'price': double.tryParse(_priceController.text) ?? 0,
                   'discountPrice':
                       double.tryParse(_discountPriceController.text) ?? 0,
