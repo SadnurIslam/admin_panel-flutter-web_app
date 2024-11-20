@@ -42,5 +42,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-/web/index.html
-index.html
+web/index.html
