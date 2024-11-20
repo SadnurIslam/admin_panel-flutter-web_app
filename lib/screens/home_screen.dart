@@ -26,10 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentScreen = ProductScreen();
           break;
         case 'categories':
-          _currentScreen = CategoriesScreen();
+          _currentScreen = CategoryScreen();
           break;
         case 'orders':
-          _currentScreen = OrdersScreen();
+          _currentScreen = AdminOrderManagementScreen();
           break;
         case 'users':
           _currentScreen = UsersScreen();
